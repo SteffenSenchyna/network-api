@@ -22,24 +22,23 @@ def createReport(request):
     try:
         net_connect = ConnectHandler(**device)
         net_connect.enable()
-        outputV = net_connect.send_command("show int brief", use_textfsm=True)
+        output = net_connect.send_command("show interface summary", use_textfsm=True)
         #storing output as dictionary with the textfsm command 
-        outputV = outputV[0]
+        output = output[0]
         #storing the needed variables 
-        Hostname = outputV["hostname"]
-        MAC = outputV["mac"]
-        Hardware = outputV["hardware"][0]
-        SN = outputV["serial"][0]
-        OS = outputV["rommon"]
-        OSV = outputV["version"]
-        uptime = outputV["uptime"]   
+        intName = output["Interface Name"]
+        port = output["port"]
+        vlanID = output["Vlan Id"]
+        portIP = output["IP Address"]
+        portType = output["Type"]   
     #Error Handling
     except Exception as e:
         print(e)
     #Stating headers for the csv file
-    headers = ["Hostname", "MAC", "Hardware", "SN", "OS", "OSV", "uptime"]
+    headers = ["intName", "port", "vlanID", "portIP", "portType"]
     #Writing the file to csv 
     with open ("file.csv", "w") as f:
         writer = csv.DictWriter(f, headers)
         writer.writeheader()
-        writer.writerow({"Hostname": Hostname, "MAC": MAC, "Hardware": Hardware, "SN": SN, "OS": OS, "OSV": OSV, "uptime": uptime})
+        writer.writerow({"intName": intName, "port": port, "vlanID": vlanID, "portIP": portIP, "portType": portType})
+    
