@@ -48,7 +48,7 @@ def create_int(request):
 
     if (response.status_code == 201):
         print("Successfully added interface")
-        return Response("Successfully added interface", status=response.status_code)
+        return Response(response.text, status=response.status_code)
     else:
         return Response(response.text, status=response.status_code)
 
