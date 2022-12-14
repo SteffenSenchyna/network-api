@@ -4,14 +4,13 @@ from flask import Response
 from pprint import pprint
 import csv
 import io
-from pandas.io.json import json_normalize
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
  
 # Opening JSON file and loading the data
 # into the variable data
 
-ipList = ["10.0.10.1", "10.0.10.2", "10.0.10.3", "10.0.10.4", "10.0.10.5"]
+ipList = ["10.0.10.1"]
 interfaceList = [["Interface Name", "Interface Description", "Interface Enabled", "IP Address", "Subnet Mask", "Duplex Mode", "Interface Speed"]]
 
 for ip in ipList:
