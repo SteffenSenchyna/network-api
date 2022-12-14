@@ -1,0 +1,6 @@
+Interface Name,Interface Description,Interface Enabled,IP Address,Subnet Mask,Duplex Mode,Interface Speed
+GigabitEthernet1,Management VLAN,if-state-up,10.0.10.1,255.255.255.0,full-duplex,speed-1gb
+GigabitEthernet1,Management VLAN,if-state-up,10.0.10.2,255.255.255.0,full-duplex,speed-1gb
+GigabitEthernet1,Management VLAN,if-state-up,10.0.10.3,255.255.255.0,full-duplex,speed-1gb
+GigabitEthernet1,Management VLAN,if-state-up,10.0.10.4,255.255.255.0,full-duplex,speed-1gb
+GigabitEthernet1,Management VLAN,if-state-up,10.0.10.5,255.255.255.0,full-duplex,speed-1gb
