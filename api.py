@@ -4,7 +4,7 @@ from app import interface, user
 
 app = flask.Flask(__name__)
 
-@app.route("/switch/interfaces", methods=["GET"])
+@app.route("/network/backup", methods=["POST"])
 def get_int():
     res = interface.get_int(request)
     return res
