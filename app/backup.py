@@ -1,8 +1,6 @@
 import datetime
 import os
 import pytz
-import requests
-import json
 from flask import Response
 import napalm
 from dotenv import load_dotenv
@@ -19,7 +17,7 @@ def putS3(hostname, config):
     formated_date = utc_now.strftime("%Y-%m-%dT%H-%M-%S")
     s3_client = session.resource("s3")
     s3_object = s3_client.Object(
-        "network-conf", f'{hostname}/{formated_date}.txt')
+        "network-conf", f'{hostname}/{hostname}-{formated_date}.txt')
     try:
         result = s3_object.put(Body=(config))
         return result

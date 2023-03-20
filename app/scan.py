@@ -8,7 +8,7 @@ from flask import Response
 import requests
 
 
-def getScan(request):
+def getScan():
     load_dotenv()
     env = os.environ["ENV"]
     if env == "local":
