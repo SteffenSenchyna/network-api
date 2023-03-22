@@ -13,7 +13,7 @@ def post_backup():
 
 @app.route("/network/scan", methods=["GET"])
 def get_scan():
-    res = scan.getScan(request)
+    res = scan.getScan()
     return res
 
 

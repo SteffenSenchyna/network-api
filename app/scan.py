@@ -21,11 +21,11 @@ def getScan():
         'Accept': 'application/json',
         'Authorization': os.environ["NETBOXTOKEN"]
     }
-    if os.environ["ENV"] == "local":
-        response = requests.get(url, headers=headers).json()
-        response = response["results"]
-        # for i in response:
-        #     pprint(i["primary_ip4"]["address"])
+
+    response = requests.get(url, headers=headers).json()
+    response = response["results"]
+    # for i in response:
+    #     pprint(i["primary_ip4"]["address"])
 
     def ping(ip, host):
         result = subprocess.run(
