@@ -37,8 +37,9 @@ def getScan():
 
     try:
         for i in response:
+            ip = i["primary_ip4"]["address"].split("/")
             t = threading.Thread(target=ping, args=(
-                i["primary_ip4"]["address"], i))
+                ip[0], i))
             t.start()
             threads.append(t)
         for t in threads:
@@ -54,28 +55,32 @@ def getScan():
         devicesRemote = []
         for i in response:
             if i["site"]["slug"] == "hmc-coporate-headquaters":
-                devicesMain.append(i)
                 totalDevicesMain += 1
-                if i["ping_status"] == "up":
-                    upDevicesMain += 1
-                else:
-                    downDevicesMain += 1
+                devicesMain.append(i)
             else:
                 totalDevicesRemote += 1
                 devicesRemote.append(i)
-                if i["ping_status"] == "up":
-                    upDevicesRemote += 1
-                else:
-                    downDevicesRemote += 1
+
+        for i in devicesMain:
+            if i["ping_status"] == "up":
+                upDevicesMain += 1
+            else:
+                downDevicesMain += 1
+
+        for i in devicesRemote:
+            if i["ping_status"] == "up":
+                upDevicesRemote += 1
+            else:
+                downDevicesRemote += 1
 
         webResponse = {
             "devicesRemote": devicesRemote,
             "devicesMain": devicesMain,
-            "downDevicesMain": downDevicesRemote,
-            "upDevicesMain": upDevicesRemote,
+            "downDevicesMain": downDevicesMain,
+            "upDevicesMain": upDevicesMain,
             "downDevicesMain": downDevicesMain,
             "downDevicesRemote": downDevicesRemote,
-            "upDevicesRemote": upDevicesMain,
+            "upDevicesRemote": upDevicesRemote,
             "upDevicesMain": upDevicesMain,
             "totalDevicesMain": totalDevicesMain,
             "totalDevicesRemote": totalDevicesRemote
