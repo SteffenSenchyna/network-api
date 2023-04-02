@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-api-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: network-api
+  template:
+    metadata:
+      labels:
+        app: network-api
+    spec:
+      containers:
+        - name: network-api
+          image: ssenchyna/network-api:latest
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: network-api-configmap
+

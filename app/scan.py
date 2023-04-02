@@ -10,16 +10,14 @@ import requests
 
 def getScan():
     load_dotenv()
-    env = os.environ["ENV"]
-    if env == "local":
-        url = "http://0.0.0.0:8000/api/dcim/devices/"
-    else:
-        url = "http://netbox-docker-netbox-1:8080/api/dcim/devices/"
+    NETBOXURL = os.environ["NETBOXURL"]
+    NETBOXTOKEN = os.environ["NETBOXTOKEN"]
+    url = f"http://{NETBOXURL}/api/dcim/devices/"
     threads = []
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': os.environ["NETBOXTOKEN"]
+        'Authorization': f"Token {NETBOXTOKEN}"
     }
 
     response = requests.get(url, headers=headers).json()

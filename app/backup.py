@@ -17,7 +17,7 @@ def putS3(hostname, config):
     formated_date = utc_now.strftime("%Y-%m-%dT%H-%M-%S")
     s3_client = session.resource("s3")
     s3_object = s3_client.Object(
-        "network-conf", f'{hostname}/{hostname}-{formated_date}.txt')
+        "network-conf", f'{hostname}/{formated_date}.txt')
     try:
         result = s3_object.put(Body=(config))
         return result
@@ -32,7 +32,7 @@ def postBackup(request):
     load_dotenv()
     driver = napalm.get_network_driver('ios')
     for i in ips:
-        device = driver(hostname=i, username=os.environ["USER_NAME"], password=os.environ["PASSWORD"], optional_args={
+        device = driver(hostname=i, username=os.environ["USERNAME"], password=os.environ["PASSWORD"], optional_args={
                         'secret': os.environ["SECRET"]})
         try:
             device.open()

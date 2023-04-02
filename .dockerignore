@@ -1,0 +1,8 @@
+.env
+.gitattributes
+.gitignore
+.dockerignore
+encode_env.sh
+charts/
+README.md
+
