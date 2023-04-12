@@ -10,17 +10,19 @@ pipeline {
   agent any
 
   stages {
-    stage('Build for testing') {
+
+    stage('Build For Unit Testing') {
         steps {
           sh 'pip install -r requirements.txt'
         }
       }
-    stage ('Test'){
+
+    stage ('Unit Testing'){
         steps {
             sh 'python tests/unit_tests.py'
         }
       }
-    }
+    
     stage("Docker login") {
       steps {
         sh """
@@ -76,4 +78,5 @@ pipeline {
         """
       }
     }
+  }
 }
