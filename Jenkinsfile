@@ -19,7 +19,8 @@ pipeline {
 
     stage ('Unit Testing'){
         steps {
-            sh 'python tests/unit_tests.py'
+        sh 'python -m unittest discover -s tests -p "*_test.py"'
+        junit 'reports/**/*.xml'
         }
       }
     
