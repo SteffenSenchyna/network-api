@@ -23,7 +23,7 @@ pipeline {
     stage ('Unit Testing'){
         steps {
         sh 'python3 -m unittest discover -s tests -p "*_tests.py"'
-        junit 'reports/**/*.xml'
+        junit allowEmptyResults: true, testResults: 'test-reports/*.xml'
         }
       }
     
