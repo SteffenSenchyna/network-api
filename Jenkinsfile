@@ -3,8 +3,6 @@
 pipeline {
   environment {
     USER="ssenchyna"
-    PASSWORD=$DOCKER_PASSWORD
-    DOCKER_REGISTRY=$DOCKER_REPO
     BUILDER_NAME='mbuilder'
     SERVICE="network-api"
   }
@@ -17,7 +15,7 @@ pipeline {
       steps {
         sh """
           ## Login to Docker Repo ##
-          docker login -u $USER -p $PASSWORD $DOCKER_REGISTRY 
+          docker login -u $USER -p $DOCKER_PASSWORD 
         """
       }
     }
