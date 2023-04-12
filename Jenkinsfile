@@ -15,7 +15,7 @@ pipeline {
       steps {
         sh """
           ## Login to Docker Repo ##
-          docker login -u $USER -p $DOCKER_PASSWORD 
+          docker login -u $USER -p ${env.DOCKER_PASSWORD} 
         """
       }
     }
@@ -49,7 +49,7 @@ pipeline {
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t $DOCKER_REGISTRY/$SERVICE:$TAG .
+                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${DOCKER_REPO}/$SERVICE:$TAG .
             """
         }
     }
