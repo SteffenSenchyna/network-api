@@ -35,7 +35,7 @@ pipeline {
       }
     }
 
-    //Note: qemu is responsible for building images that are not supported by host
+    // Note: qemu is responsible for building images that are not supported by host
     stage("Register QEMU emulators") {
       steps {
         sh """
@@ -45,12 +45,12 @@ pipeline {
       }
     }
 
-    //Create a buildx builder container to do the multi-architectural builds
+    // Create a buildx builder container to do the multi-architectural builds
     stage("Create Buildx Builder") {
       steps {
         sh """
           ## Create buildx builder
-          docker buildx create --name dev-$BUILDER_NAME
+          docker buildx create --name $BUILDER_NAME
           docker buildx use $BUILDER_NAME
           docker buildx inspect --bootstrap
 
@@ -60,24 +60,25 @@ pipeline {
       }
     }
 
-    //Build using buildx
+    // Now we build using buildx
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64, linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:${env.BUILD_NUMBER} . 
-                """
+                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:${env.BUILD_NUMBER} . 
+            """
         }
     }
 
-    // Cleaning up
+    // Need to clean up
     stage("Destroy buildx builder") {
       steps {
         sh """
-          docker buildx use default docker buildx rm $BUILDER_NAME
+          docker buildx use default
+          docker buildx rm $BUILDER_NAME
 
           ## Sanity check step
           docker buildx ls
-          """
+        """
       }
     }
   }
