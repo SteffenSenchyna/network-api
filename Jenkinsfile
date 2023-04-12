@@ -5,6 +5,9 @@ pipeline {
     USER="ssenchyna"
     BUILDER_NAME='mbuilder'
     SERVICE="network-api"
+    NETBOXTOKEN="0123456789abcdef0123456789abcdef01234567"
+    NETBOXURL="0.0.0.0:8000"
+    DISCORDURL="https://discord.com/api/webhooks/1091090100760354907/BitSvRvkRg7j9x2nusu5z1x2fauMxvXWmTE0yh8_xrrN5EDYpwrLbUemYXkqqA8iLlDI"
   }
 
   agent any
