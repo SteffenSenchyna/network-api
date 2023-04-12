@@ -3,7 +3,6 @@ import json
 from unittest.mock import MagicMock, patch
 from app import scan
 import pkg_resources
-import xmlrunner
 
 
 class TestGetScan(unittest.TestCase):
@@ -66,7 +65,3 @@ class TestGetScan(unittest.TestCase):
                 except pkg_resources.DistributionNotFound:
                     self.fail(
                         f"Requirement '{requirement}' not found in requirements.txt")
-
-
-if __name__ == '__main__':
-    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
