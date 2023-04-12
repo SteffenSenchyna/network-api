@@ -35,35 +35,32 @@ pipeline {
       }
     }
 
-    // Note: qemu is responsible for building images that are not supported by host
-    // stage("Register QEMU emulators") {
-    //   steps {
-    //     sh """
-    //     docker run --rm --privileged docker/binfmt: 820fdd95a9972a5308930a2bdfb8573dd4447ad3
-    //     cat /proc/sys/fs/binfmt_misc/qemu-aarch64
-    //     """
-    //   }
-    // }
+    //Note: qemu is responsible for building images that are not supported by host
+    stage("Register QEMU emulators") {
+      steps {
+        sh """
+        docker run --rm --privileged docker/binfmt: 820fdd95a9972a5308930a2bdfb8573dd4447ad3
+        cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+        """
+      }
+    }
 
-    // Create a buildx builder container to do the multi-architectural builds
-    // stage("Create Buildx Builder") {
-    //     when {
-    //         branch 'development'
-    //     }
-    //   steps {
-    //     sh """
-    //       ## Create buildx builder
-    //       docker buildx create --name dev-$BUILDER_NAME
-    //       docker buildx use $BUILDER_NAME
-    //       docker buildx inspect --bootstrap
+    //Create a buildx builder container to do the multi-architectural builds
+    stage("Create Buildx Builder") {
+      steps {
+        sh """
+          ## Create buildx builder
+          docker buildx create --name dev-$BUILDER_NAME
+          docker buildx use $BUILDER_NAME
+          docker buildx inspect --bootstrap
 
-    //       ## Sanity check step
-    //       docker buildx ls
-    //     """
-    //   }
-    // }
+          ## Sanity check step
+          docker buildx ls
+        """
+      }
+    }
 
-    // Now we build using buildx
+    //Build using buildx
     stage("Build multi-arch image") {
         steps {
             sh """
@@ -72,16 +69,16 @@ pipeline {
         }
     }
 
-    // Need to clean up
-    // stage("Destroy buildx builder") {
-    //   steps {
-    //     sh """
-    //       docker buildx use default docker buildx rm $BUILDER_NAME
+    // Cleaning up
+    stage("Destroy buildx builder") {
+      steps {
+        sh """
+          docker buildx use default docker buildx rm $BUILDER_NAME
 
-    //       ## Sanity check step
-    //       docker buildx ls
-    //       """
-    //   }
-    // }
+          ## Sanity check step
+          docker buildx ls
+          """
+      }
+    }
   }
 }
