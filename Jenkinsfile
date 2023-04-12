@@ -15,7 +15,7 @@ pipeline {
       steps {
         sh """
           ## Login to Docker Repo ##
-          docker login -u $USER -p ${env.DOCKER_PASSWORD} 
+          echo ${env.DOCKER_PASS}  | docker login --username $USER --password-stdin ${DOCKER_REPO}
         """
       }
     }
