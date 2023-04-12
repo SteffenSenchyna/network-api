@@ -7,12 +7,22 @@ pipeline {
     SERVICE="network-api"
   }
 
-  agent any
+  agent {
+    docker {
+        image 'python:3.9'
+        label 'python-agent'
+     }
+  }
 
   stages {
 
     stage('Build For Unit Testing') {
         steps {
+          sh """
+            apt-get update
+            apt-get install -y python3-pip
+            pip3 install package1 package2
+          """
           sh 'pip install -r requirements.txt'
         }
       }
