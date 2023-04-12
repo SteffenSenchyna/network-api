@@ -19,9 +19,12 @@ def getScan():
         'Accept': 'application/json',
         'Authorization': f"Token {NETBOXTOKEN}"
     }
-
-    response = requests.get(url, headers=headers).json()
-    response = response["results"]
+    try:
+        response = requests.get(url, headers=headers).json()
+        response = response["results"]
+    except Exception as e:
+        print(e)
+        return Response(str(e), status=400)
     # for i in response:
     #     pprint(i["primary_ip4"]["address"])
 
@@ -83,7 +86,7 @@ def getScan():
             "totalDevicesMain": totalDevicesMain,
             "totalDevicesRemote": totalDevicesRemote
         }
-        return Response(json.dumps(webResponse), status=200)
+        return Response(json.dumps(webResponse), status=200, mimetype='application/json')
     except Exception as e:
         print(e)
-        return Response(e, status=400)
+        return Response(str(e), status=400)
