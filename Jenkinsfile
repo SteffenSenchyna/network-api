@@ -49,7 +49,7 @@ pipeline {
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG . --timeout 600
+                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:${env.BUILD_NUMBER} . --timeout 600
             """
         }
     }
