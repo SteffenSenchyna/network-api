@@ -31,25 +31,25 @@ pipeline {
     }
 
     // Create a buildx builder container to do the multi-architectural builds
-    stage("Create Buildx Builder") {
-      steps {
-        sh """
-          ## Create buildx builder
-          docker buildx create --name $BUILDER_NAME
-          docker buildx use $BUILDER_NAME
-          docker buildx inspect --bootstrap
+    // stage("Create Buildx Builder") {
+    //   steps {
+    //     sh """
+    //       ## Create buildx builder
+    //       docker buildx create --name $BUILDER_NAME
+    //       docker buildx use $BUILDER_NAME
+    //       docker buildx inspect --bootstrap
 
-          ## Sanity check step
-          docker buildx ls
-        """
-      }
-    }
+    //       ## Sanity check step
+    //       docker buildx ls
+    //     """
+    //   }
+    // }
 
     // Now we build using buildx
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG .
+                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG . --timeout 600
             """
         }
     }
