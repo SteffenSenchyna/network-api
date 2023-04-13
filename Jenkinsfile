@@ -2,7 +2,7 @@
 
 pipeline {
   environment {
-    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
     USER="ssenchyna"
     BUILDER_NAME='mbuilder'
     SERVICE="network-api"
