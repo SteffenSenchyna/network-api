@@ -82,27 +82,5 @@ pipeline {
         """
       }
     }
-
-    stage('Update Helm Chart for k8 Manifest') {
-      steps {
-        // Clone Git repository containing Helm chart
-        dir("gitRepo"){
-          sh """
-              git clone https://github.com/SteffenSenchyna/k0s-manifest.git .
-              echo $TAG > file1.txt
-              git add file1.txt
-              git commit -m "Updates file1.txt with $BUILD_NUMBER"
-              git push
-          """
-        def chart = readYaml file: "$SERVICE/Chart.yaml"
-        // Update image tag in values file
-        chart.appVersion = $TAG
-          sh """
-          git commit -m "Update chart to version ${env.BUILD_TAG}"
-          git push
-        """
-        }
-      }
-    }
   }
 }

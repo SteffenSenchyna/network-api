@@ -1,0 +1,2 @@
+docker login
+helm push network-api-0.1.0
