@@ -6,7 +6,7 @@ app = flask.Flask(__name__)
 
 
 @app.route("/health", methods=["GET"])
-def post_backup():
+def health_check():
     return Response("Alive", status=200)
 
 

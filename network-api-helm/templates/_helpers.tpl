@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "network-api.name" -}}
+{{- define "network-api-helm.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "network-api.fullname" -}}
+{{- define "network-api-helm.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "network-api.chart" -}}
+{{- define "network-api-helm.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "network-api.labels" -}}
-helm.sh/chart: {{ include "network-api.chart" . }}
-{{ include "network-api.selectorLabels" . }}
+{{- define "network-api-helm.labels" -}}
+helm.sh/chart: {{ include "network-api-helm.chart" . }}
+{{ include "network-api-helm.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "network-api.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "network-api.name" . }}
+{{- define "network-api-helm.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "network-api-helm.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "network-api.serviceAccountName" -}}
+{{- define "network-api-helm.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "network-api.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "network-api-helm.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
