@@ -65,7 +65,7 @@ pipeline {
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:1.0.0-$TAG_VERSION  . 
+                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:1.0.0-$GIT_COMMIT  . 
             """
         }
     }
