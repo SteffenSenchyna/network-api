@@ -46,7 +46,7 @@ pipeline {
       }
     }
 
-    Create a buildx builder container to do the multi-architectural builds
+    // Create a buildx builder container to do the multi-architectural builds
     stage("Create Buildx Builder") {
       steps {
         sh """
