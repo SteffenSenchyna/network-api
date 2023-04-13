@@ -2,7 +2,8 @@
 
 pipeline {
   environment {
-    TAG = "1.0.0-" + sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
+    TAG = "1.0.0"
+    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
     USER="ssenchyna"
     BUILDER_NAME='mbuilder'
     SERVICE="network-api"
@@ -65,7 +66,7 @@ pipeline {
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG . 
+            docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG-$GIT_COMMIT . 
             """
         }
     }
@@ -81,7 +82,7 @@ pipeline {
         """
       }
     }
-    
+
     stage('Update Helm Chart for k8 Manifest') {
       steps {
         // Clone Git repository containing Helm chart
