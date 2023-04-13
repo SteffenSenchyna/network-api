@@ -2,7 +2,7 @@
 
 pipeline {
   environment {
-    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
+    TAG = "1.0.0-" + sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
     USER="ssenchyna"
     BUILDER_NAME='mbuilder'
     SERVICE="network-api"
@@ -65,7 +65,7 @@ pipeline {
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:1.0.0-$GIT_COMMIT  . 
+                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG . 
             """
         }
     }
@@ -79,6 +79,28 @@ pipeline {
           ## Sanity check step
           docker buildx ls
         """
+      }
+    }
+    
+    stage('Update Helm Chart for k8 Manifest') {
+      steps {
+        // Clone Git repository containing Helm chart
+        dir("gitRepo"){
+          sh """
+              git clone https://github.com/SteffenSenchyna/k0s-manifest.git .
+              echo $TAG > file1.txt
+              git add file1.txt
+              git commit -m "Updates file1.txt with $BUILD_NUMBER"
+              git push
+          """
+        def chart = readYaml file: "$SERVICE/Chart.yaml"
+        // Update image tag in values file
+        chart.appVersion = $TAG
+          sh """
+          git commit -m "Update chart to version ${env.BUILD_TAG}"
+          git push
+        """
+        }
       }
     }
   }
