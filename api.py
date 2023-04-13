@@ -5,10 +5,9 @@ from app import backup, scan
 app = flask.Flask(__name__)
 
 
-@app.route("/health", methods=["POST"])
+@app.route("/health", methods=["GET"])
 def post_backup():
-    res = backup.postBackup(request)
-    return res
+    return Response("Alive", status=200)
 
 
 @app.route("/network/backup", methods=["POST"])
