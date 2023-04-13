@@ -2,7 +2,7 @@
 
 pipeline {
   environment {
-    TAG_VERSION = sh(script: 'echo v1.0.0-$BUILD_NUMBER-${env.GIT_COMMIT:0:7}', returnStdout: true).trim()
+    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
     USER="ssenchyna"
     BUILDER_NAME='mbuilder'
     SERVICE="network-api"
@@ -65,7 +65,7 @@ pipeline {
     stage("Build multi-arch image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG_VERSION  . 
+                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:1.0.0-$TAG_VERSION  . 
             """
         }
     }
