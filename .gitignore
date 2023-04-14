@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 argo-helm-cmds.txt
+*.tgz
 # C extensions
 *.so
 
