@@ -23,7 +23,7 @@ while read -r line || [ -n "$line" ]; do
 done < .env
 
 # Create the Kubernetes ConfigMap YAML file
-cat <<EOF > charts/${PWD##*/}-configmap.yaml
+cat <<EOF > charts/${PWD##*/}-config.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:

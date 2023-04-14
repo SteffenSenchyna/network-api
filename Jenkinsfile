@@ -2,6 +2,8 @@
 
 pipeline {
   environment {
+    TAG = "1.0.0"
+    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
     USER="ssenchyna"
     BUILDER_NAME='mbuilder'
     SERVICE="network-api"
@@ -36,50 +38,56 @@ pipeline {
     }
 
     // Note: qemu is responsible for building images that are not supported by host
-    stage("Register QEMU emulators") {
-      steps {
-        sh """
-        docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
-        cat /proc/sys/fs/binfmt_misc/qemu-aarch64
-        """
-      }
-    }
+    // stage("Register QEMU emulators") {
+    //   steps {
+    //     sh """
+    //     docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
+    //     cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+    //     """
+    //   }
+    // }
 
     // Create a buildx builder container to do the multi-architectural builds
-    stage("Create Buildx Builder") {
-      steps {
-        sh """
-          ## Create buildx builder
-          docker buildx create --name $BUILDER_NAME
-          docker buildx use $BUILDER_NAME
-          docker buildx inspect --bootstrap
+    // stage("Create Buildx Builder") {
+    //   steps {
+    //     sh """
+    //       ## Create buildx builder
+    //       docker buildx create --name $BUILDER_NAME
+    //       docker buildx use $BUILDER_NAME
+    //       docker buildx inspect --bootstrap
 
-          ## Sanity check step
-          docker buildx ls
-        """
-      }
-    }
+    //       ## Sanity check step
+    //       docker buildx ls
+    //     """
+    //   }
+    // }
 
     // Now we build using buildx
-    stage("Build multi-arch image") {
+    // stage("Build multi-arch image") {
+    //     steps {
+    //         sh """
+    //         docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG-$GIT_COMMIT . 
+    //         """
+    //     }
+    // }
+    stage("Build Docker Image") {
         steps {
             sh """
-                docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:${env.BUILD_NUMBER} . 
+            docker build -t ${env.DOCKER_REPO}/$SERVICE:$TAG-AMD64 .
+            docker push ${env.DOCKER_REPO}/$SERVICE:$TAG-AMD64
             """
         }
     }
-
     // Need to clean up
-    stage("Destroy buildx builder") {
-      steps {
-        sh """
-          docker buildx use default
-          docker buildx rm $BUILDER_NAME
-
-          ## Sanity check step
-          docker buildx ls
-        """
-      }
-    }
+    // stage("Destroy buildx builder") {
+    //   steps {
+    //     sh """
+    //       docker buildx use default
+    //       docker buildx rm $BUILDER_NAME
+    //       ## Sanity check step
+    //       docker buildx ls
+    //     """
+    //   }
+    // }
   }
 }
