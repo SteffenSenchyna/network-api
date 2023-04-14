@@ -1,4 +1,0 @@
-docker login 
-cd newtork-api-helm
-helm package .
-helm push network-api-helm-0.1.0.tgz oci://docker.io/ssenchyna
