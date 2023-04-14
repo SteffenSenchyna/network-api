@@ -2,7 +2,7 @@
 
 pipeline {
   environment {
-    TAG = "1.0.0"
+    TAG = "0.1.${currentBuild.number}"
     GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
     USER="ssenchyna"
     BUILDER_NAME='mbuilder'
@@ -32,7 +32,8 @@ pipeline {
       steps {
         sh """
           ## Login to Docker Repo ##
-          echo ${env.DOCKER_PASS} | docker login -u $USER --password-stdin 
+          echo ${env.DOCKER_PASS} | docker login -u $USER --password-stdin
+          echo ${env.DOCKER_PASS} | helm registry login registry-1.docker.io -u $USER --password-stdin 
         """
       }
     }
@@ -73,8 +74,12 @@ pipeline {
     stage("Build Docker Image") {
         steps {
             sh """
+            echo "Build number is ${currentBuild.number}
             docker build -t ${env.DOCKER_REPO}/$SERVICE:$TAG .
             docker push ${env.DOCKER_REPO}/$SERVICE:$TAG
+            sed -i 's/version:.*/version: $TAG/' Chart.yaml
+            sed -i 's/appVersion:.*/appVersion: $TAG/' Chart.yaml
+            helm push network-api-$TAG.tgz  oci://registry-1.docker.io/$USER
             """
         }
     }
@@ -90,6 +95,6 @@ pipeline {
     //   }
     // }
 
-    
+
   }
 }
