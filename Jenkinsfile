@@ -79,7 +79,8 @@ pipeline {
             docker push ${env.DOCKER_REPO}/$SERVICE:$TAG
             sed -i 's/version:.*/version: $TAG/' Chart.yaml
             sed -i 's/appVersion:.*/appVersion: $TAG/' Chart.yaml
-            helm push network-api-$TAG.tgz  oci://registry-1.docker.io/$USER
+            helm package ./$SERVICE
+            helm push $SERVICE-$TAG.tgz  oci://registry-1.docker.io/$USER
             """
         }
     }
