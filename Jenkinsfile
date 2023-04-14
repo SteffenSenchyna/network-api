@@ -77,8 +77,8 @@ pipeline {
             echo "Build number is ${currentBuild.number}
             docker build -t ${env.DOCKER_REPO}/$SERVICE:$TAG .
             docker push ${env.DOCKER_REPO}/$SERVICE:$TAG
-            sed -i 's/version:.*/version: $TAG/' Chart.yaml
-            sed -i 's/appVersion:.*/appVersion: $TAG/' Chart.yaml
+            sed -i 's/version:.*/version: $TAG/' ./$SERVICE/Chart.yaml
+            sed -i 's/appVersion:.*/appVersion: $TAG/' ./$SERVICE/Chart.yaml
             helm package ./$SERVICE
             helm push "$SERVICE-$TAG.tgz"  oci://registry-1.docker.io/$USER
             """
