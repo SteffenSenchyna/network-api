@@ -73,8 +73,8 @@ pipeline {
     stage("Build Docker Image") {
         steps {
             sh """
-            docker build -t ${env.DOCKER_REPO}/$SERVICE:$TAG-AMD64 .
-            docker push ${env.DOCKER_REPO}/$SERVICE:$TAG-AMD64
+            docker build -t ${env.DOCKER_REPO}/$SERVICE:$TAG .
+            docker push ${env.DOCKER_REPO}/$SERVICE:$TAG
             """
         }
     }
