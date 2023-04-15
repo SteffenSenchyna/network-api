@@ -71,17 +71,16 @@ pipeline {
     //         """
     //     }
     // }
-    stage("Build Docker Image") {
+    stage("Build Docker/Helm") {
         steps {
             sh """
-            echo "Build number is ${currentBuild.number}
+            echo "Build number is ${currentBuild.number}"
             docker build -t ${env.DOCKER_REPO}/$SERVICE:$TAG .
             docker push ${env.DOCKER_REPO}/$SERVICE:$TAG
             sed -i 's/version:.*/version: $TAG/' ./$SERVICE/Chart.yaml
             sed -i 's/appVersion:.*/appVersion: $TAG/' ./$SERVICE/Chart.yaml
             helm package ./$SERVICE
-            echo "helm version"
-            echo "ls"
+            ls
             helm push $SERVICE-$TAG".tgz oci://registry-1.docker.io/$USER
             """
         }
