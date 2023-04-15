@@ -76,8 +76,8 @@ pipeline {
         steps {
             sh """
             echo "Build number is ${currentBuild.number}"
-            docker build -t ${env.DOCKER_REPO}/$SERVICE:$TAG .
-            docker push ${env.DOCKER_REPO}/$SERVICE:$TAG
+            docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
+            docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
             sed -i 's/version:.*/version: $HELM_TAG/' ./$SERVICE/Chart.yaml
             sed -i 's/appVersion:.*/appVersion: $BUILD_TAG/' ./$SERVICE/Chart.yaml
             helm package ./$SERVICE
