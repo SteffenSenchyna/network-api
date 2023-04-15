@@ -4,6 +4,8 @@ from app import backup, scan
 
 app = flask.Flask(__name__)
 
+# Health Check Route for K8 Readiness Probe
+
 
 @app.route("/health", methods=["GET"])
 def health_check():
