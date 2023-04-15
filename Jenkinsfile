@@ -81,7 +81,7 @@ pipeline {
             sed -i 's/appVersion:.*/appVersion: $TAG/' ./$SERVICE/Chart.yaml
             helm package ./$SERVICE
             ls
-            helm push $SERVICE-$TAG".tgz oci://registry-1.docker.io/$USER
+            helm push "$SERVICE-$TAG".tgz oci://registry-1.docker.io/$USER
             """
         }
     }
