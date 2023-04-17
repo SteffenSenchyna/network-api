@@ -1,4 +1,4 @@
-FROM python:3.9.2-alpine3.13 AS builder
+FROM python:3.9.2-alpine3.13 
 # To build container run 
 # docker build -t ssenchyna/network-api-docker . && docker push ssenchyna/network-api-docker
 # We copy just the requirements.txt first to leverage Docker cache
@@ -9,12 +9,5 @@ RUN apk add --update gcc musl-dev libffi-dev libressl-dev
 COPY . /app
 WORKDIR /app
 RUN pip install --no-cache-dir -r requirements.txt 
-
-
-FROM python:3.9.2-alpine3.13 as final
-
-RUN apk update && apk upgrade
-WORKDIR /app
-COPY --from=builder /app .
 EXPOSE 8081/TCP
 CMD [ "python", "-u", "api.py" ]
