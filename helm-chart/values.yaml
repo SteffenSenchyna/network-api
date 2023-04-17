@@ -35,6 +35,8 @@ securityContext: {}
 # readOnlyRootFilesystem: true
 # runAsNonRoot: true
 # runAsUser: 1000
+config:
+  name: default-config
 
 service:
   type: ClusterIP
