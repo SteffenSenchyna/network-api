@@ -6,29 +6,21 @@ pipeline {
     BUILD_TAG = "0.1.${currentBuild.number}"
     GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
     USER="ssenchyna"
-    BUILDER_NAME='mbuilder'
-    SERVICE="network-api"
-    NETBOXTOKEN="0123456789abcdef0123456789abcdef01234567"
-    NETBOXURL="0.0.0.0:8000"
-    DISCORDURL="https://discord.com/api/webhooks/1091090100760354907/BitSvRvkRg7j9x2nusu5z1x2fauMxvXWmTE0yh8_xrrN5EDYpwrLbUemYXkqqA8iLlDI"
-  }
+    SERVICE="${env.JOB_NAME}"
+    NETBOXTOKEN=""
+    NETBOXURL=""
+    DISCORDURL=""
+    AWS_ACCESS_KEY=""
+    AWS_SECRET_KEY=""
+    AWS_DEFAULT_REGION=""
+    NETBOXTOKEN=""
+    AWS_S3_BUCKET_NAME=""
+    NETWORKAPIURL=""
+    MONGOURL=""  }
 
   agent any
 
   stages {
-
-    stage('Build For Unit Testing') {
-        steps {
-          sh 'pip install -r requirements.txt'
-        }
-      }
-
-    stage ('Unit Testing'){
-        steps {
-        sh 'python3 -m unittest discover -s tests -p "*_test.py"'
-        }
-      }
-    
     stage("Docker login") {
       steps {
         sh """
@@ -38,66 +30,24 @@ pipeline {
         """
       }
     }
-
-    // Note: qemu is responsible for building images that are not supported by host
-    // stage("Register QEMU emulators") {
-    //   steps {
-    //     sh """
-    //     docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3
-    //     cat /proc/sys/fs/binfmt_misc/qemu-aarch64
-    //     """
-    //   }
-    // }
-
-    // Create a buildx builder container to do the multi-architectural builds
-    // stage("Create Buildx Builder") {
-    //   steps {
-    //     sh """
-    //       ## Create buildx builder
-    //       docker buildx create --name $BUILDER_NAME
-    //       docker buildx use $BUILDER_NAME
-    //       docker buildx inspect --bootstrap
-
-    //       ## Sanity check step
-    //       docker buildx ls
-    //     """
-    //   }
-    // }
-
-    // Now we build using buildx
-    // stage("Build multi-arch image") {
-    //     steps {
-    //         sh """
-    //         docker buildx build --platform linux/amd64,linux/arm64 --push -t ${env.DOCKER_REPO}/$SERVICE:$TAG-$GIT_COMMIT . 
-    //         """
-    //     }
-    // }
     stage("Build Docker/Helm") {
         steps {
             sh """
-            echo "Build number is ${currentBuild.number}"
             docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
             docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
-            sed -i 's/version:.*/version: $HELM_TAG/' ./$SERVICE/Chart.yaml
-            sed -i 's/appVersion:.*/appVersion: $BUILD_TAG/' ./$SERVICE/Chart.yaml
-            helm package ./$SERVICE
-            ls
-            helm push "$SERVICE-$HELM_TAG".tgz oci://registry-1.docker.io/$USER
+            sed -i 's/version:.*/version: $HELM_TAG/' ./helm-chart/Chart.yaml
+            sed -i 's/appVersion:.*/appVersion: $BUILD_TAG/' ./helm-chart/Chart.yaml
+            helm package ./helm-chart
             """
         }
     }
-    // Need to clean up
-    // stage("Destroy buildx builder") {
-    //   steps {
-    //     sh """
-    //       docker buildx use default
-    //       docker buildx rm $BUILDER_NAME
-    //       ## Sanity check step
-    //       docker buildx ls
-    //     """
-    //   }
-    // }
-
-
+    stage("Push Docker/Helm") {
+        steps {
+            sh """
+            docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
+            helm push "$SERVICE-$HELM_TAG".tgz oci://registry-1.docker.io/$USER
+            """
+        }
+    } 
   }
 }

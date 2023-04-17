@@ -7,4 +7,6 @@ charts/
 README.md
 docker-build.py
 docker-push.py
-
+Jenkinsfile
+network-api/
+.vscode
