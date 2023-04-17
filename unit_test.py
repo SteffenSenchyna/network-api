@@ -1,6 +1,7 @@
 import os
 import unittest
 import json
+from dotenv import load_dotenv
 from unittest import mock
 from unittest.mock import MagicMock, patch
 from app import scan
@@ -11,6 +12,7 @@ class TestGetScan(unittest.TestCase):
 
     @mock.patch.dict(os.environ, {'NETBOXURL': 'localhost:27017', 'NETBOXTOKEN': '1234'})
     def test_getScan(self):
+        load_dotenv()
         self.assertEqual(os.environ['NETBOXURL'], 'localhost:27017')
         # Mock external dependencies
         mock_requests_get = MagicMock()
