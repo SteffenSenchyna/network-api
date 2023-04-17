@@ -7,7 +7,7 @@ pipeline {
     GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim().substring(0, 6)
     USER="ssenchyna"
     SERVICE="${env.JOB_NAME}"
-    NETBOXTOKEN=""
+    NETBOXTOKEN="123"
     NETBOXURL="0.0.0.0"
     DISCORDURL=""
     AWS_ACCESS_KEY=""
