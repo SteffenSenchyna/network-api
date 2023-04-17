@@ -1,12 +1,17 @@
+import os
 import unittest
 import json
+from unittest import mock
 from unittest.mock import MagicMock, patch
 from app import scan
 import pkg_resources
 
 
 class TestGetScan(unittest.TestCase):
+
+    @mock.patch.dict(os.environ, {'NETBOXURL': 'localhost:27017', 'NETBOXTOKEN': '1234'})
     def test_getScan(self):
+        self.assertEqual(os.environ['NETBOXURL'], 'localhost:27017')
         # Mock external dependencies
         mock_requests_get = MagicMock()
         mock_requests_get.return_value.json.return_value = {

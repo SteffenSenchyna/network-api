@@ -3,12 +3,10 @@ import os
 import pytz
 from flask import Response
 import napalm
-from dotenv import load_dotenv
 import boto3
 
 
 def putS3(hostname, config):
-    load_dotenv()
     session = boto3.Session(
         aws_access_key_id=os.environ["AWS_ACCESS_KEY"],
         aws_secret_access_key=os.environ["AWS_SECRET_KEY"]

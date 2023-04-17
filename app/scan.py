@@ -3,13 +3,11 @@ from pprint import pprint
 import subprocess
 import threading
 import json
-from dotenv import load_dotenv
 from flask import Response
 import requests
 
 
 def getScan():
-    load_dotenv()
     NETBOXURL = os.environ["NETBOXURL"]
     NETBOXTOKEN = os.environ["NETBOXTOKEN"]
     url = f"http://{NETBOXURL}/api/dcim/devices/"
