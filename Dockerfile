@@ -8,9 +8,9 @@ RUN pip install --upgrade pip && \
     apk add --update gcc musl-dev libffi-dev libressl-dev
 
 WORKDIR /app
-COPY ./requirements.txt ./tests /app/
+COPY . /app
 RUN pip wheel --wheel-dir=/wheels -r requirements.txt
-RUN python -m unittest discover -s tests -p "*_test.py"
+RUN python -m unittest discover -s . -p "*_test.py"
 
 # Stage 2: production environment
 FROM python:3.9.2-alpine3.13
