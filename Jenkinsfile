@@ -13,10 +13,10 @@ pipeline {
     AWS_ACCESS_KEY=""
     AWS_SECRET_KEY=""
     AWS_DEFAULT_REGION=""
-    NETBOXTOKEN=""
     AWS_S3_BUCKET_NAME=""
     NETWORKAPIURL=""
-    MONGOURL=""  }
+    MONGOURL=""  
+    }
 
   agent any
 
