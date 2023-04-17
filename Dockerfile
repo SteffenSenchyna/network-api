@@ -8,7 +8,7 @@ RUN pip install --upgrade pip && \
     apk add --update gcc musl-dev libffi-dev libressl-dev
 
 WORKDIR /app
-COPY ./requirements.txt /app/requirements.txt
+COPY ./requirements.txt ./tests /app/
 RUN pip wheel --wheel-dir=/wheels -r requirements.txt
 RUN python -m unittest discover -s tests -p "*_test.py"
 
