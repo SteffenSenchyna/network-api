@@ -8,7 +8,7 @@ pipeline {
     USER="ssenchyna"
     SERVICE="${env.JOB_NAME}"
     NETBOXTOKEN=""
-    NETBOXURL=""
+    NETBOXURL="0.0.0.0"
     DISCORDURL=""
     AWS_ACCESS_KEY=""
     AWS_SECRET_KEY=""
