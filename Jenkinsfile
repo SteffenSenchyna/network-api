@@ -38,12 +38,9 @@ pipeline {
       stage("Clone Cluster Chart Repo") {
         steps {
           // Clone the Git repository
-          // dir('cluster-chart') {
-          //       git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git'          
-          // }
-          checkout scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'cluster-chart']], userRemoteConfigs: [[credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git']])
-          // Check to see if there where any changes made to the helm chart
-
+          dir('cluster-chart') {
+                git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git'          
+          }
           script {
             def CHART_VER_DEV = sh(script: "helm show chart ./cluster-chart/dev/ | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
             if (CHART_VER_DEV != CHART_VER) {
@@ -96,10 +93,9 @@ pipeline {
                     commitMsg = "No relevant changes to chart values found"
                 }
                 sh """
-                cat changed_files.txt
                 git add .
-                git commit -m "${commitMsg}"
-                git push
+                git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
+                git push 
                 """
             }
         }     
