@@ -53,7 +53,6 @@ pipeline {
           script {
             def CHART_VER_DEV = sh(script: "helm show chart ./cluster-chart/dev/ | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
             if (CHART_VER_DEV != CHART_VER) {
-              echo "Change in Helm chart version detected building new chart and image"
               sh """
               sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
               yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./cluster-chart/dev/values.yaml -i
@@ -71,7 +70,6 @@ pipeline {
               } 
           } else{
               withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
-                  echo "Building new Docker image"
                   sh """
                   cd cluster-chart
                   yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./dev/values.yaml -i
