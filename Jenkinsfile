@@ -96,7 +96,7 @@ pipeline {
                     commitMsg = "No relevant changes to chart values found"
                 }
                 sh """
-
+                cat changed_files.txt
                 git add .
                 git commit -m "${commitMsg}"
                 git push
