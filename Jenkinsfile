@@ -46,7 +46,7 @@ pipeline {
                 env.CHART_CHANGE = "true"
             } 
           }
-          sh('echo "Hit"')
+          sh('echo "yq --version"')
         }
       }
 
@@ -66,7 +66,7 @@ pipeline {
         }
         steps {
             sh """
-            sed -i 's/version:.*/version: $BUILD_VER-$GIT_COMMIT/' ./cluster-chart/dev/$SERVICE/Chart.yaml
+            sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
             helm package ./helm-chart
             helm push "$SERVICE-$CHART_VER".tgz oci://registry-1.docker.io/$USER
             """
