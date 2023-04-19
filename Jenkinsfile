@@ -92,13 +92,14 @@ pipeline {
                 } else {
                     commitMsg = "No relevant changes to chart values found"
                 }
-                sh """
-                git add .
-                git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
                 withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
-                    sh "git push -u origin main"
+                  sh """
+                  git add .
+                  git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
+                  git push -u origin main
+                  """
                 }
-                """
+
             }
         }     
       }
