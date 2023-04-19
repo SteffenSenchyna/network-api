@@ -50,12 +50,11 @@ pipeline {
         }
       }
 
-      stage("Build/Push Docker Image") {
+      stage("Push Docker Image") {
           steps {
               sh """
               docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_VER-$GIT_COMMIT .
               docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_VER-$GIT_COMMIT
-              // yq e --arg service "$SERVICE" --arg tag "$BUILD_VER-$GIT_COMMIT" '.[$service].image.tag = $tag' ./cluster-chart/dev/$SERVICE/values.yaml
               """
           }
       }
