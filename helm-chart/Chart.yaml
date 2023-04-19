@@ -3,4 +3,4 @@ name: network-api
 description: A Helm chart for Network-API
 type: application
 version: 1.0.0
-appVersion: "0.0"
+appVersion: "1.0.0"

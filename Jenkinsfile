@@ -54,7 +54,7 @@ pipeline {
             def CHART_VER_DEV = sh(script: "helm show chart ./cluster-chart/dev/ | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
             if (CHART_VER_DEV != CHART_VER) {
               sh """
-              sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
+              yq eval '(.dependencies[] | select (.name == strenv(SERVICE))).version = strenv(CHART_VER)' -i ./cluster-chart/dev/Chart.yaml
               yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./cluster-chart/dev/values.yaml -i
               helm package ./helm-chart
               helm push "$SERVICE-$CHART_VER".tgz oci://registry-1.docker.io/$USER
