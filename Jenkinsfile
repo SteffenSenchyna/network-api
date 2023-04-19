@@ -55,6 +55,7 @@ pipeline {
               sh """
               docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_VER-$GIT_COMMIT .
               docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_VER-$GIT_COMMIT
+              yq -i --arg service "$SERVICE" --arg tag "$BUILD_VER-$GIT_COMMIT" '.[$service].image.tag = $tag' ./cluster-chart/dev/$SERVICE/values.yaml
               """
           }
       }
@@ -91,6 +92,7 @@ pipeline {
                     commitMsg = "No relevant changes to chart values found"
                 }
                 sh """
+                git config --global user.name "Jenkins"
                 git commit -m "${commitMsg}"
                 git push
                 """
