@@ -35,7 +35,9 @@ pipeline {
       stage("Clone Cluster Chart Repo") {
         steps {
           // Clone the Git repository
-          git branch: "main", url: "https://github.com/SteffenSenchyna/cluster-chart.git"
+          sh """
+          git clone https://github.com/SteffenSenchyna/cluster-chart.git
+          """
           // Check to see if there where any changes made to the helm chart
           sh("ls")
           script {
@@ -76,8 +78,6 @@ pipeline {
             sh """
             cd cluster-chart
             git add .
-            git commit -m "Descriptive commit message"
-            git push
             """
             script {
                 def commitMsg
