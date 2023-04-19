@@ -102,8 +102,8 @@ pipeline {
     // Clean up 
     post {
     always {
-        sh 'rm *.tgz'
-        sh 'rm -r cluster-chart'
+        sh 'if [ -n "$(find . -maxdepth 1 -name "*.tgz")" ]; then rm ./*.tgz; fi'
+        sh 'if [ -d "cluster-chart" ]; then rm -r cluster-chart; fi'
     }
   }
 }
