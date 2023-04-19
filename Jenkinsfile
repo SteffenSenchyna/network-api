@@ -4,8 +4,8 @@ pipeline {
   environment {
     CHART_VER = sh(script: "helm show chart ./helm-chart | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
     BUILD_VER = "1.0.0"
-    GIT_COMMIT = sh(returnStdout: true, script: 'echo "${BUILD_VER}-$(git rev-parse --short HEAD)"').trim()
-    BUILD_TAG = "${BUILD_VAR}-${GIT_COMMIT}"
+    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+    BUILD_TAG = "${BUILD_VER}-${GIT_COMMIT}"
     USER="ssenchyna"
     SERVICE = env.JOB_NAME.substring(0, env.JOB_NAME.lastIndexOf('/'))
     CHART_CHANGE="false"
@@ -26,6 +26,7 @@ pipeline {
       stage("Docker login") {
         steps {
           sh """
+            ls
             ## Login to Docker Repo ##
             echo $BUILD_TAG
             echo ${env.DOCKER_PASS} | docker login -u $USER --password-stdin
@@ -41,7 +42,7 @@ pipeline {
           git clone https://github.com/SteffenSenchyna/cluster-chart.git
           """
           // Check to see if there where any changes made to the helm chart
-          sh("ls")
+
           script {
             def CHART_VER_DEV = sh(script: "helm show chart ./cluster-chart/dev/ | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
             if (CHART_VER_DEV != CHART_VER) {
