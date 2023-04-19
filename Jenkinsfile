@@ -38,9 +38,10 @@ pipeline {
       stage("Clone Cluster Chart Repo") {
         steps {
           // Clone the Git repository
-          sh """
-          git clone https://github.com/SteffenSenchyna/cluster-chart.git
-          """
+          // dir('cluster-chart') {
+          //       git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git'          
+          // }
+          checkout scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'cluster-chart']], userRemoteConfigs: [[credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git']])
           // Check to see if there where any changes made to the helm chart
 
           script {
