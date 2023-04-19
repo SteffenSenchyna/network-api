@@ -1,17 +1,9 @@
 #!/usr/bin/env groovy
 
 pipeline {
-  properties([
-    // only keep 25 builds to prevent disk usage from growing out of control
-    buildDiscarder(
-      logRotator(
-        artifactDaysToKeepStr: '', 
-        artifactNumToKeepStr: '', 
-        daysToKeepStr: '', 
-        numToKeepStr: '25',
-      ),
-    ),
-  ])
+  options {
+    buildDiscarder logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '25', daysToKeepStr: '', numToKeepStr: '20')
+  }
   environment {
     CHART_VER = sh(script: "helm show chart ./helm-chart | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
     BUILD_VER = "1.0.0"
