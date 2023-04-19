@@ -4,7 +4,7 @@ pipeline {
   environment {
     CHART_VER = sh(script: "helm show chart ./helm-chart | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
     BUILD_VER = "1.0.0"
-    GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+    GIT_COMMIT = sh(returnStdout: true, script: 'echo "${BUILD_VER}-$(git rev-parse --short HEAD)"').trim()
     USER="ssenchyna"
     SERVICE = env.JOB_NAME.substring(0, env.JOB_NAME.lastIndexOf('/'))
     CHART_CHANGE="false"
@@ -55,7 +55,7 @@ pipeline {
               sh """
               docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_VER-$GIT_COMMIT .
               docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_VER-$GIT_COMMIT
-              yq -i --arg service "$SERVICE" --arg tag "$BUILD_VER-$GIT_COMMIT" '.[$service].image.tag = $tag' ./cluster-chart/dev/$SERVICE/values.yaml
+              yq eval \'.[env(SERVICE)].image.tag = env(GIT_COMMIT)\' ./cluster-chart/dev/values.yaml -i
               """
           }
       }
