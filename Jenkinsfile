@@ -4,7 +4,8 @@ pipeline {
   environment {
     CHART_VER = sh(script: "helm show chart ./helm-chart | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
     BUILD_VER = "1.0.0"
-    GIT_COMMIT = sh(returnStdout: true, script: 'echo "\${BUILD_VER}-$(git rev-parse --short HEAD)"').trim()
+    GIT_COMMIT = sh(returnStdout: true, script: 'echo "${BUILD_VER}-$(git rev-parse --short HEAD)"').trim()
+    BUILD_TAG = "${BUILD_VAR}-${GIT_COMMIT}"
     USER="ssenchyna"
     SERVICE = env.JOB_NAME.substring(0, env.JOB_NAME.lastIndexOf('/'))
     CHART_CHANGE="false"
@@ -26,6 +27,7 @@ pipeline {
         steps {
           sh """
             ## Login to Docker Repo ##
+            echo $BUILD_TAG
             echo ${env.DOCKER_PASS} | docker login -u $USER --password-stdin
             echo ${env.DOCKER_PASS} | helm registry login registry-1.docker.io -u $USER --password-stdin 
           """
@@ -52,9 +54,9 @@ pipeline {
       stage("Push Docker Image") {
           steps {
               sh """
-              docker build -t ${env.DOCKER_REPO}/$SERVICE:$GIT_COMMIT .
-              docker push ${env.DOCKER_REPO}/$SERVICE:$GIT_COMMIT
-              yq eval \'.[env(SERVICE)].image.tag = env(GIT_COMMIT)\' ./cluster-chart/dev/values.yaml -i
+              docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
+              docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
+              yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./cluster-chart/dev/values.yaml -i
               cat ./cluster-chart/dev/values.yaml
               """
           }
