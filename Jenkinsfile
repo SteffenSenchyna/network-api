@@ -2,7 +2,7 @@
 
 pipeline {
   options {
-    buildDiscarder logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '25', daysToKeepStr: '', numToKeepStr: '20')
+    buildDiscarder logRotator(artifactDaysToKeepStr: '5', artifactNumToKeepStr: '20', daysToKeepStr: '5', numToKeepStr: '20')
   }
   environment {
     CHART_VER = sh(script: "helm show chart ./helm-chart | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
@@ -45,6 +45,7 @@ pipeline {
 
       stage("Clone Cluster Chart Repo and Build Image/Chart") {
         steps {
+          cleanWs()
           // Clone the Git repository
           sh """
           docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
@@ -88,6 +89,7 @@ pipeline {
 }
     post {
     always {
+        cleanWs cleanWhenSuccess: false
         sh 'if [ -n "$(find . -maxdepth 1 -name "*.tgz")" ]; then rm ./*.tgz; fi'
         sh 'if [ -d "cluster-chart" ]; then rm -r cluster-chart; fi'
         sh 'docker system prune -f'
