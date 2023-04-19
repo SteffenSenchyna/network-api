@@ -46,6 +46,7 @@ pipeline {
                 env.CHART_CHANGE = "true"
             } 
           }
+          sh('echo "Hit"')
         }
       }
 
@@ -98,4 +99,11 @@ pipeline {
         }     
       }
     }
+    // Clean up 
+    post {
+    always {
+        sh 'rm *.tgz'
+        sh 'rm -r cluster-chart'
+    }
+  }
 }
