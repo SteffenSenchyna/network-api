@@ -75,58 +75,9 @@ pipeline {
           }
         }
       }
-
-      // stage("Push Docker Image") {
-      //     steps {
-      //         sh """
-      //         docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
-      //         docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
-      //         yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./cluster-chart/dev/values.yaml -i
-      //         cat ./cluster-chart/dev/values.yaml
-      //         """
-      //     }
-      // }
-
-      // stage("Build/Push Helm Chart") {
-      //   when {
-      //       // Execute the stage only if the remote chart version is different from the current chart version
-      //       expression { env.CHART_CHANGE != "true" }
-      //   }
-      //   steps {
-      //       sh """
-      //       sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
-      //       helm package ./helm-chart
-      //       helm push "$SERVICE-$CHART_VER".tgz oci://registry-1.docker.io/$USER
-      //       """
-      //     }
-      // }
-
-      // stage("Commit Changes to Cluster Chart Repo") {
-      //   steps {
-      //       sh """
-      //       cd cluster-chart
-      //       ls -a
-      //       """
-      //       script {
-      //           dir('cluster-chart') {
-      //           git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git'          
-      //           }
-      //           withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
-      //             sh """
-      //             cd cluster-chart
-      //             yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./dev/values.yaml -i
-      //             git add .
-      //             git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
-      //             git push -u origin main
-      //             """
-      //           }
-
-      //       }
-      //   }     
-      // }
-    // }
-    // Clean up 
-        }}}
+    }
+  }
+}
     post {
     always {
         sh 'if [ -n "$(find . -maxdepth 1 -name "*.tgz")" ]; then rm ./*.tgz; fi'
