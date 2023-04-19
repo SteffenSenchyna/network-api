@@ -46,7 +46,7 @@ pipeline {
                 env.CHART_CHANGE = "true"
             } 
           }
-          sh('echo "yq --version"')
+          sh('yq --version')
         }
       }
 
