@@ -95,7 +95,9 @@ pipeline {
                 sh """
                 git add .
                 git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
-                git push origin HEAD:main
+                withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
+                    sh "git push -u origin main"
+                }
                 """
             }
         }     
