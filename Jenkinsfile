@@ -88,6 +88,7 @@ pipeline {
 }
     post {
     always {
+        cleanWs cleanWhenSuccess: false
         sh 'if [ -n "$(find . -maxdepth 1 -name "*.tgz")" ]; then rm ./*.tgz; fi'
         sh 'if [ -d "cluster-chart" ]; then rm -r cluster-chart; fi'
         sh 'docker system prune -af'
