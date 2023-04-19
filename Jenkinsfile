@@ -96,9 +96,9 @@ pipeline {
                     commitMsg = "No relevant changes to chart values found"
                 }
                 sh """
-                git config --global user.name "jenkins"
-                git config --global user.email "jenkins@netbox.local"
-                git add .
+                // git config --global user.name "jenkins"
+                // git config --global user.email "jenkins@netbox.local"
+                git status
                 git commit -m "${commitMsg}"
                 git push
                 """
