@@ -22,11 +22,16 @@ pipeline {
 
   agent any
 
-  stages {   
+  stages {
+      stage ('Test'){
+      steps {
+        sh 'pip install -r requirements.txt'
+        sh 'python3 -m unittest discover -s . -p "*_test.py"'
+        }
+      }   
       stage("Docker login") {
         steps {
           sh """
-            ls
             ## Login to Docker Repo ##
             echo $BUILD_TAG
             echo ${env.DOCKER_PASS} | docker login -u $USER --password-stdin
@@ -48,6 +53,7 @@ pipeline {
           script {
             def CHART_VER_DEV = sh(script: "helm show chart ./cluster-chart/dev/ | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
             if (CHART_VER_DEV != CHART_VER) {
+              echo "Change in Helm chart version detected building new chart and image"
               sh """
               sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
               yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./cluster-chart/dev/values.yaml -i
@@ -65,11 +71,12 @@ pipeline {
               } 
           } else{
               withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
+                  echo "Building new Docker image"
                   sh """
                   cd cluster-chart
                   yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./dev/values.yaml -i
                   git add .
-                  git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
+                  git commit -m "Docker-Image:${BUILD_TAG}"
                   git push -u origin main
                   """
           }
