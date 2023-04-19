@@ -35,76 +35,98 @@ pipeline {
         }
       }
 
-      stage("Clone Cluster Chart Repo") {
+      stage("Clone Cluster Chart Repo and Build Image/Chart") {
         steps {
           // Clone the Git repository
+          sh """
+          docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
+          docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
+          """
           dir('cluster-chart') {
                 git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git'          
           }
           script {
             def CHART_VER_DEV = sh(script: "helm show chart ./cluster-chart/dev/ | grep '^version:' | awk '{print \$2}'", returnStdout: true).trim()
             if (CHART_VER_DEV != CHART_VER) {
-                env.CHART_CHANGE = "true"
-            } 
-          }
-        }
-      }
-
-      stage("Push Docker Image") {
-          steps {
               sh """
-              docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
-              docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
+              sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
               yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./cluster-chart/dev/values.yaml -i
-              cat ./cluster-chart/dev/values.yaml
+              helm package ./helm-chart
+              helm push "$SERVICE-$CHART_VER".tgz oci://registry-1.docker.io/$USER
               """
-          }
-      }
-
-      stage("Build/Push Helm Chart") {
-        when {
-            // Execute the stage only if the remote chart version is different from the current chart version
-            expression { env.CHART_CHANGE != "true" }
-        }
-        steps {
-            sh """
-            sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
-            helm package ./helm-chart
-            helm push "$SERVICE-$CHART_VER".tgz oci://registry-1.docker.io/$USER
-            """
-          }
-      }
-
-      stage("Commit Changes to Cluster Chart Repo") {
-        steps {
-            sh """
-            cd cluster-chart
-            ls -a
-            """
-            script {
-                def commitMsg
-                sh "git diff --name-only HEAD | sort | uniq > changed_files.txt"
-                def changedFiles = readFile('changed_files.txt').trim()
-                if (changedFiles.contains('values.yaml') && changedFiles.contains('Chart.yaml')) {
-                    commitMsg = "change the ${SERVICE} image tag to ${BUILD_VER}-${GIT_COMMIT} and the chart version to ${CHART_VER}"
-                } else if (changedFiles.contains('values.yaml')) {
-                    commitMsg = "change the image tag to ${VAR}"
-                } else {
-                    commitMsg = "No relevant changes to chart values found"
-                }
-                withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
+              withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
                   sh """
+                  cd cluster-chart
+                  yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./dev/values.yaml -i
                   git add .
                   git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
                   git push -u origin main
                   """
-                }
-
-            }
-        }     
+              } 
+          } else{
+              withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
+                  sh """
+                  cd cluster-chart
+                  yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./dev/values.yaml -i
+                  git add .
+                  git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
+                  git push -u origin main
+                  """
+          }
+        }
       }
-    }
+
+      // stage("Push Docker Image") {
+      //     steps {
+      //         sh """
+      //         docker build -t ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG .
+      //         docker push ${env.DOCKER_REPO}/$SERVICE:$BUILD_TAG
+      //         yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./cluster-chart/dev/values.yaml -i
+      //         cat ./cluster-chart/dev/values.yaml
+      //         """
+      //     }
+      // }
+
+      // stage("Build/Push Helm Chart") {
+      //   when {
+      //       // Execute the stage only if the remote chart version is different from the current chart version
+      //       expression { env.CHART_CHANGE != "true" }
+      //   }
+      //   steps {
+      //       sh """
+      //       sed -i 's/version:.*/version: $CHART_VER/' ./cluster-chart/dev/Chart.yaml
+      //       helm package ./helm-chart
+      //       helm push "$SERVICE-$CHART_VER".tgz oci://registry-1.docker.io/$USER
+      //       """
+      //     }
+      // }
+
+      // stage("Commit Changes to Cluster Chart Repo") {
+      //   steps {
+      //       sh """
+      //       cd cluster-chart
+      //       ls -a
+      //       """
+      //       script {
+      //           dir('cluster-chart') {
+      //           git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/SteffenSenchyna/cluster-chart.git'          
+      //           }
+      //           withCredentials([gitUsernamePassword(credentialsId: 'github-creds', gitToolName: 'Default')]) {
+      //             sh """
+      //             cd cluster-chart
+      //             yq eval \'.[env(SERVICE)].image.tag = env(BUILD_TAG)\' ./dev/values.yaml -i
+      //             git add .
+      //             git commit -m "Docker-Image:${BUILD_TAG} Chart:${CHART_VER}"
+      //             git push -u origin main
+      //             """
+      //           }
+
+      //       }
+      //   }     
+      // }
+    // }
     // Clean up 
+        }}}
     post {
     always {
         sh 'if [ -n "$(find . -maxdepth 1 -name "*.tgz")" ]; then rm ./*.tgz; fi'
