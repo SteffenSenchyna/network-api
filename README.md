@@ -52,6 +52,7 @@ If the scan is successful, the response will be:
 }
 ```
 ## Environmental Variables
+Create a .env file in the root directory of the project and set the following environment variables:
 ```
 AWS_ACCESS_KEY=<aws_access_key>
 AWS_SECRET_KEY=<aws_secret_key>
