@@ -51,7 +51,7 @@ If the scan is successful, the response will be:
   "totalDevicesRemote": <The total number of devices located in the remote site>
 }
 ```
-### Environmental Variables
+## Environmental Variables
 ```
 AWS_ACCESS_KEY=<aws_access_key>
 AWS_SECRET_KEY=<aws_secret_key>
