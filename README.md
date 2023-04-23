@@ -1,5 +1,5 @@
 # Network-API
-This is a RESTful API built with Flask and designed to manage the network configuration of a Kubernetes cluster. The API exposes two endpoints:  
+This is a RESTful API built with Flask and designed to manage/monitor on-premise network devices. The API exposes three endpoints:  
 * /health: A health check endpoint for Kubernetes readiness probes at /health.
 * /network/backup: a POST endpoint to initiate a backup of the network configuration
 * /network/scan: a GET endpoint to trigger a network scan. 
